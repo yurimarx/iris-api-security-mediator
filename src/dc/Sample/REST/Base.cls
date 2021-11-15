@@ -1,4 +1,4 @@
-Class Sample.REST.Base Extends %CSP.REST [ System = 3 ]
+Class Sample.REST.Base Extends Sample.REST.SecurityMediator
 {
 
 Parameter CHARSET = "utf-8";
