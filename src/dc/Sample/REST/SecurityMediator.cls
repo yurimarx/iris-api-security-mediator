@@ -10,9 +10,6 @@ ClassMethod AccessCheck(Output pAuthorized As %Boolean = 0) As %Status
   
   Set tSC = $$$OK
   
-  Set User = %request.Get("User") 
-
-
   Set message.verb = %request.Method
 
   Set message.url = %request.URL
@@ -22,28 +19,32 @@ ClassMethod AccessCheck(Output pAuthorized As %Boolean = 0) As %Status
   Set message.application = %request.Application
   
   Set methodName = ""
-  Do ..GetClassMethodName(message.url, "GET", .methodName)
+  Do ..GetClassMethodName(message.url, %request.Method, .methodName)
   
   Set message.method = methodName
 
-  Set message.xdata = ##class(dc.SecurityMediator.XDataUtil).GetXDataContent($CLASSNAME(), methodName)
+  Set xdata = ##class(dc.SecurityMediator.XDataUtil).GetXDataContent($CLASSNAME(), methodName)
 
-  Do ..GetSecurityRules(message.xdata, .rules, .roles, .header, .operator)
+  Do ..GetSecurityRules(xdata, .rules, .roles, .header, .operator)
 
-  Set message.rules = rules
+  Set UserRoles = $LISTFROMSTRING($ROLES,",")
+  Set RolesAllowed = $LISTFROMSTRING(roles,",")
 
-  Set message.roles = roles
+  Set HasRole = 0
+  
+  For RoleIdx=1:1:$LISTLENGTH(UserRoles) {
+    If $LISTFIND(RolesAllowed, $LIST(UserRoles, RoleIdx)) {
+      Set HasRole = 1
+      Quit
+    }
+  }
 
-  Set message.header = header 
-
-  Set message.operator = operator
-
-  If User = "" {
-    Set pAuthorized = 0
-    Set message.error = $USERNAME_" is not authorized for this request. Check the user credentials for "_$CLASSNAME()_". Current credentials: "_$ROLES
-    Write message.%ToJSON()
-  } Else {
+  If HasRole {
     Set pAuthorized = 1
+  } Else {
+    Set pAuthorized = 0
+    Set message.error = $USERNAME_" is not authorized for this request. User Roles Allowed is not in User Roles"
+    Write message.%ToJSON()
   }
 
   Return tSC
@@ -69,7 +70,7 @@ ClassMethod GetClassMethodName(pUrl As %String, pMethod As %String, Output metho
         Set tMatchUrl=pUrl
         
         #; Uppercase the method
-        Set pMethod=$ZCVT(pMethod,"U")
+        Set pMethod=$ZCONVERT(pMethod,"U")
             
         #; Walk the dispatch map in collation order of definition
         For tIndex=1:1 {
@@ -78,29 +79,29 @@ ClassMethod GetClassMethodName(pUrl As %String, pMethod As %String, Output metho
             Set tMapEntry=..DispatchMap(tIndex) If tMapEntry="" Quit
              
             #; Pick out the RegEx
-            Set tRegEx=$List(tMapEntry,2)
+            Set tRegEx=$LIST(tMapEntry,2)
             
             #; Create a matcher
-            Set:$L(tRegEx) tMatcher=##class(%Regex.Matcher).%New(tRegEx)
+            Set:$LENGTH(tRegEx) tMatcher=##class(%Regex.Matcher).%New(tRegEx)
             
             #; Test each regular expression in turn, extracting the arguments,
             #; dispatching to the named method  
-            If $S('$L(tRegEx):'$L(tMatchUrl), 1:tMatcher.Match(tMatchUrl)) {
+            If $SELECT('$LENGTH(tRegEx):'$LENGTH(tMatchUrl), 1:tMatcher.Match(tMatchUrl)) {
                 
                 #; We have matched the resource
                 Set tResourceMatched=1
                 
-                Set tType=$List(tMapEntry,1)
+                Set tType=$LIST(tMapEntry,1)
                 
                 #; If we are a simple route
                 If tType="R" {
                     
                     #; comparison is case-insensitive now and supports multiple methods delimited by ","
-                    Set tMethods = $ZSTRIP($ZCVT($List(tMapEntry,3),"U"),"*W"),tFound = 0
+                    Set tMethods = $ZSTRIP($ZCONVERT($LIST(tMapEntry,3),"U"),"*W"),tFound = 0
                     For tI = 1:1:$LENGTH(tMethods,",") If pMethod = $PIECE(tMethods,",",tI) Set tFound = 1 Quit
                     If 'tFound Continue
                     
-                    Set tTarget=$List(tMapEntry,4)
+                    Set tTarget=$LIST(tMapEntry,4)
                     
                     #; We have matched a method
                     Set tMethodMatched=1
@@ -144,6 +145,7 @@ ClassMethod GetSecurityRules(xdata As %String, Output rules, Output roles As %St
   Set rules = sentence
   Set roles = $EXTRACT(sentence, $FIND(sentence,"roles:"), *)
   Set roles = $EXTRACT(roles, $FIND(roles,"{"), $FIND(roles,"}")-2)
+  Set roles = $REPLACE(roles, " ","")
   Set header = $EXTRACT(sentence, $FIND(sentence,"header:"), *)
   Set header = $EXTRACT(header, $FIND(header,"{"), $FIND(header,"}")-2)
 

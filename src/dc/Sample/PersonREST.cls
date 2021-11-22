@@ -35,7 +35,7 @@ ClassMethod GetInfo() As %Status
 }
 
 /// Retreive all the records of dc.Sample.Person
-/// @security.and: roles: { %PersonAdmin } header: { User-Agent = "Postman"gm } 
+/// @security.and: roles: { PersonAdmin } header: { User-Agent = "Postman"gm } 
 ClassMethod GetAllPersons() As %Status
 {
  
