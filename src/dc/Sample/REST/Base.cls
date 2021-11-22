@@ -1,4 +1,4 @@
-Class Sample.REST.Base Extends Sample.REST.SecurityMediator
+Class Sample.REST.Base Extends dc.SecurityMediator.SecurityMediator
 {
 
 Parameter CHARSET = "utf-8";

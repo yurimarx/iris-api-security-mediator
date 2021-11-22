@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-  <Document name="rest-api-template.ZPM">
+  <Document name="iris-api-security-mediator.ZPM">
     <Module>
-      <Name>rest-api-template</Name>
+      <Name>iris-api-security-mediator</Name>
       <Version>1.1.0</Version>
       <Packaging>module</Packaging>
       <SourcesRoot>src</SourcesRoot>
       <Resource Name="dc.Sample.PKG"/>
+      <Resource Name="dc.SecurityMediator.PKG"/>
       <Dependencies>
         <ModuleReference>
           <Name>swagger-ui</Name>

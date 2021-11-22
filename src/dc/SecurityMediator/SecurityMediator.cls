@@ -1,4 +1,4 @@
-Class Sample.REST.SecurityMediator Extends %CSP.REST
+Class dc.SecurityMediator.SecurityMediator Extends %CSP.REST
 {
 
 ClassMethod AccessCheck(Output pAuthorized As %Boolean = 0) As %Status

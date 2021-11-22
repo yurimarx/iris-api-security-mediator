@@ -4,7 +4,7 @@ Class dc.SecurityMediator.XDataUtil
 
 ClassMethod GetXDataContent(className, methodName) As %String
 {
-    
+     
     Set qryXdata = "SELECT parent, Name, Description FROM %Dictionary.MethodDefinition WHERE parent = ? and Name = ?"
     Set stmXdata = ##class(%SQL.Statement).%New()
     Set qStatus = stmXdata.%Prepare(qryXdata)
