@@ -57,16 +57,6 @@ localhost:52773/crud/persons/all
 See the class dc.Sample.PersonREST, method GetAllPersons(). It has a XDATA custom auth authorization rule @security.and: roles: { PersonAdmin }. This rules force to the user of this API get PersonAdmin role. So, to execute it, create PersonAdmin role and assign this role to the user that you using to request the API method. 
 
 
-## How to start coding
-This repository is ready to code in VSCode with ObjectScript plugin.
-Install [VSCode](https://code.visualstudio.com/) and [ObjectScript](https://marketplace.visualstudio.com/items?itemName=daimor.vscode-objectscript) plugin and open the folder in VSCode.
-Open /src/cls/PackageSample/ObjectScript.cls class and try to make changes - it will be compiled in running IRIS docker container.
-
-Feel free to delete PackageSample folder and place your ObjectScript classes in a form
-/src/cls/Package/Classname.cls
-
-The script in Installer.cls will import everything you place under /src/cls into IRIS.
-
 ## What's insde the repo
 
 # Dockerfile
