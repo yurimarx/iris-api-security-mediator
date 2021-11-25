@@ -10,6 +10,8 @@ XData UrlMap [ XMLNamespace = "http://www.intersystems.com/urlmap" ]
 <Route Url="/" Method="GET" Call="GetInfo" Cors="true"/>
 <!-- Get all records of Person class -->
 <Route Url="/persons/all" Method="GET" Call="GetAllPersons"/>
+<!-- Get all records of Person class -->
+<Route Url="/persons/populate" Method="GET" Call="Populate"/>
 <!-- Swagger specs -->
 <Route Url="/_spec" Method="GET" Call="SwaggerSpec" />
 <!-- GET method to return JSON for a given person id-->
@@ -78,6 +80,27 @@ ClassMethod GetPerson(id As %Integer) As %Status
     If '$IsObject(person) Quit ..Http404()
 
     Do person.%JSONExport()
+
+    Quit tSC
+}
+
+/// Populate the with 10 persons
+ClassMethod Populate() As %Status
+{
+	#dim tSC As %Status = $$$OK
+    #dim e As %Exception.AbstractException
+
+
+    #; Set the response header to plain text
+    Set %response.ContentType = ..#CONTENTTYPEJSON
+
+    Do ##class(dc.Sample.Person).AddTestData(10)
+
+    Set result = {}
+
+    Set result.message = "Populated"
+    
+    Write result.%ToJSON()
 
     Quit tSC
 }
