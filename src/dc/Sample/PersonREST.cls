@@ -27,11 +27,13 @@ XData UrlMap [ XMLNamespace = "http://www.intersystems.com/urlmap" ]
 }
 
 /// PersonsREST general information
+/// @security.and: header: { HTTP_ORGANIZATION = InterSystems }  
 ClassMethod GetInfo() As %Status
 {
   SET version = ..#Version
   SET info = {
-    "version": (version)
+    "version": (version),
+    "organization": (%request.GetCgiEnv("HTTP_ORGANIZATION"))
   }
   RETURN ..%ProcessResult($$$OK, info)
 }

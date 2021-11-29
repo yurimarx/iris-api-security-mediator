@@ -23,6 +23,8 @@ ClassMethod AccessCheck(Output pAuthorized As %Boolean = 0) As %Status
   
   Set message.method = methodName
 
+  Set message.header = $Get(%request.CgiEnvs("HTTP_ORGANIZATION")) 
+
   Set xdata = ##class(dc.SecurityMediator.XDataUtil).GetXDataContent($CLASSNAME(), methodName)
 
   Do ..GetSecurityRules(xdata, .rules, .roles, .header, .operator)
@@ -30,17 +32,35 @@ ClassMethod AccessCheck(Output pAuthorized As %Boolean = 0) As %Status
   Set UserRoles = $LISTFROMSTRING($ROLES,",")
   Set RolesAllowed = UserRoles
   
-  If $FIND(xdata, "@security") > 0 {
+  Set HasRole = 0
+  Set HasHeader = 0
+
+  If $FIND(xdata, "@security") > 0 && $FIND(xdata, "roles:") {
     Set RolesAllowed = $LISTFROMSTRING(roles,",")
+
+    For RoleIdx=1:1:$LISTLENGTH(UserRoles) {
+      If $LISTFIND(RolesAllowed, $LIST(UserRoles, RoleIdx)) {
+        Set HasRole = 1
+        Quit
+      }
+    }
+  } Else {
+    Set HasRole = 1
   }
 
-  Set HasRole = 0
-  
-  For RoleIdx=1:1:$LISTLENGTH(UserRoles) {
-    If $LISTFIND(RolesAllowed, $LIST(UserRoles, RoleIdx)) {
-      Set HasRole = 1
-      Quit
+  If $FIND(xdata, "@security") > 0 && $FIND(xdata, "header:") {
+    Set HeaderKey = $PIECE(header,"=")
+    Set HeaderKey = $ZSTRIP(HeaderKey, "<>W")
+    Set HeaderValue = $PIECE(header,"=",2)
+    Set HeaderValue = $ZSTRIP(HeaderValue, "<>W")
+
+    If $Get(%request.CgiEnvs(HeaderKey)) = HeaderValue {
+      Set HasHeader = 1
+    } Else {
+      Set HasHeader = 0
     }
+  } Else {
+    Set HasHeader = 1
   }
 
   If HasRole {
@@ -48,6 +68,14 @@ ClassMethod AccessCheck(Output pAuthorized As %Boolean = 0) As %Status
   } Else {
     Set pAuthorized = 0
     Set message.error = $USERNAME_" is not authorized for this request. User Roles Allowed is not in User Roles"
+    Write message.%ToJSON()
+  }
+
+  If HasHeader {
+    Set pAuthorized = 1 
+  } Else {
+    Set pAuthorized = 0
+    Set message.error = header_" is required in the request header"
     Write message.%ToJSON()
   }
 
@@ -152,6 +180,7 @@ ClassMethod GetSecurityRules(xdata As %String, Output rules, Output roles As %St
   Set roles = $REPLACE(roles, " ","")
   Set header = $EXTRACT(sentence, $FIND(sentence,"header:"), *)
   Set header = $EXTRACT(header, $FIND(header,"{"), $FIND(header,"}")-2)
+  Set header = $ZSTRIP(header, "<>W")
 
   If $FIND(rules,"@security.and") > 0 {
     Set operator = "AND"
