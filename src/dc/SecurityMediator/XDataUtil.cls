@@ -17,6 +17,16 @@ ClassMethod GetXDataContent(className, methodName) As %String
     Return result
 }
 
+ClassMethod foo() As %String
+{
+    Quit
+}
+
+ClassMethod bar()
+{
+    #Dim str As %String = ..foo()
+}
+
 /// Description
 ClassMethod ExtractXDataContent(className, xDataName) As %Status
 {
