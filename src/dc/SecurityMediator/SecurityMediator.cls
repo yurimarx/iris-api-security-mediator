@@ -25,7 +25,7 @@ ClassMethod AccessCheck(Output pAuthorized As %Boolean = 0) As %Status
 
   Set message.header = $Get(%request.CgiEnvs("HTTP_ORGANIZATION")) 
 
-  Set xdata = ##class(dc.SecurityMediator.XDataUtil).GetXDataContent($CLASSNAME(), methodName)
+  Do ##class(dc.SecurityMediator.XDataUtil).GetXDataContent($CLASSNAME(), methodName, .xdata)
 
   Do ..GetSecurityRules(xdata, .rules, .roles, .header, .operator)
 

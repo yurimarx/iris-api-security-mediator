@@ -11,7 +11,7 @@ Parameter PAGESIZE As INTEGER = 20;
 
 ClassMethod OnPreDispatch(pUrl As %String, pMethod As %String, ByRef pContinue As %Boolean) As %Status
 {
-  SET tSC = $$$OK
+  SET tSC = $$$OK 
   TRY {
     
     // Set the return type according to the Accept type in the request. Default is application/json.

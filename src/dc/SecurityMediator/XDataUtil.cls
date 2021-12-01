@@ -2,29 +2,25 @@
 Class dc.SecurityMediator.XDataUtil
 {
 
-ClassMethod GetXDataContent(className, methodName) As %String
+ClassMethod GetXDataContent(className, methodName, Output xData As %String) As %Status
 {
-     
-    Set qryXdata = "SELECT parent, Name, Description FROM %Dictionary.MethodDefinition WHERE parent = ? and Name = ?"
-    Set stmXdata = ##class(%SQL.Statement).%New()
-    Set qStatus = stmXdata.%Prepare(qryXdata)
-    If qStatus'=1 {Write "%Prepare  failed:" Do $System.Status.DisplayError(qStatus) Quit}
-    Set rsetXdata = stmXdata.%Execute(className, methodName) 
-    Set result = ""
-    While rsetXdata.%Next() { 
-        Set result = rsetXdata.Description
+    SET tSC = $$$OK
+    
+    Try {
+        Set qryXdata = "SELECT parent, Name, Description FROM %Dictionary.MethodDefinition WHERE parent = ? and Name = ?"
+        Set stmXdata = ##class(%SQL.Statement).%New()
+        Set qStatus = stmXdata.%Prepare(qryXdata)
+        If qStatus'=1 {Write "%Prepare  failed:" Do $System.Status.DisplayError(qStatus) Quit}
+        Set rsetXdata = stmXdata.%Execute(className, methodName) 
+        Set xData = ""
+        While rsetXdata.%Next() { 
+            Set xData = rsetXdata.Description
+        }
+    } CATCH ex {
+        SET tSC = ex.AsStatus()
     }
-    Return result
-}
 
-ClassMethod foo() As %String
-{
-    Quit
-}
-
-ClassMethod bar()
-{
-    #Dim str As %String = ..foo()
+    Return tSC
 }
 
 /// Description
