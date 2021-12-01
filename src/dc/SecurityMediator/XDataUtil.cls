@@ -10,11 +10,11 @@ ClassMethod GetXDataContent(className, methodName) As %String
     Set qStatus = stmXdata.%Prepare(qryXdata)
     If qStatus'=1 {Write "%Prepare  failed:" Do $System.Status.DisplayError(qStatus) Quit}
     Set rsetXdata = stmXdata.%Execute(className, methodName) 
-
+    Set result = ""
     While rsetXdata.%Next() { 
-        // Return rsetXdata.Name
-        Return rsetXdata.Description
+        Set result = rsetXdata.Description
     }
+    Return result
 }
 
 /// Description
