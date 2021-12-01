@@ -71,8 +71,6 @@ ClassMethod GetAllPersons() As %Status
 ClassMethod GetPerson(id As %Integer) As %Status
 {
 	#dim tSC As %Status = $$$OK
-    #dim e As %Exception.AbstractException
-
 
     #; Set the response header to plain text
     Set %response.ContentType = ..#CONTENTTYPEJSON
@@ -90,8 +88,6 @@ ClassMethod GetPerson(id As %Integer) As %Status
 ClassMethod Populate() As %Status
 {
 	#dim tSC As %Status = $$$OK
-    #dim e As %Exception.AbstractException
-
 
     #; Set the response header to plain text
     Set %response.ContentType = ..#CONTENTTYPEJSON
@@ -111,7 +107,6 @@ ClassMethod Populate() As %Status
 ClassMethod CreatePerson() As %Status
 {
 	#dim tSC As %Status = $$$OK
-    #dim e As %Exception.AbstractException
     Set person = ##class(dc.Sample.Person).%New()
     Set data=%request.Content
 
@@ -131,7 +126,6 @@ ClassMethod CreatePerson() As %Status
 ClassMethod UpdatePerson(id As %Integer) As %Status
 {
 	#dim tSC As %Status = $$$OK
-    #dim e As %Exception.AbstractException
     Set person = ##class(dc.Sample.Person).%OpenId(id)
     If '$IsObject(person) Return ..Http404()
     Set data=%request.Content
@@ -151,7 +145,6 @@ ClassMethod UpdatePerson(id As %Integer) As %Status
 ClassMethod DeletePerson(id As %Integer) As %Status
 {
 	#dim tSC As %Status = $$$OK
-    #dim e As %Exception.AbstractException
     Set person = ##class(dc.Sample.Person).%OpenId(id)
     If '$IsObject(person) Return ..Http404()
 
@@ -166,7 +159,7 @@ ClassMethod DeletePerson(id As %Integer) As %Status
 
 ClassMethod SwaggerSpec() As %Status
 {
-  Set tSC = ##class(%REST.API).GetWebRESTApplication($NAMESPACE, %request.Application, .swagger)
+  Do ##class(%REST.API).GetWebRESTApplication($NAMESPACE, %request.Application, .swagger)
   Do swagger.info.%Remove("x-ISC_Namespace")
   Set swagger.basePath = "/crud"
   Set swagger.info.title = "InterSystems IRIS REST CRUD demo"
