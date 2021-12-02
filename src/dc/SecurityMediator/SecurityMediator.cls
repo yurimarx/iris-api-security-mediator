@@ -23,8 +23,6 @@ ClassMethod AccessCheck(Output pAuthorized As %Boolean = 0) As %Status
   
   Set message.method = methodName
 
-  Set message.header = $Get(%request.CgiEnvs("HTTP_ORGANIZATION")) 
-
   Do ##class(dc.SecurityMediator.XDataUtil).GetXDataContent($CLASSNAME(), methodName, .xdata)
 
   Do ..GetSecurityRules(xdata, .rules, .roles, .header, .operator)
@@ -64,10 +62,12 @@ ClassMethod AccessCheck(Output pAuthorized As %Boolean = 0) As %Status
   }
 
   If HasRole {
-    Set pAuthorized = 1 
+    Set pAuthorized = 1
+    Do $SYSTEM.Security.Audit("SecurityMediator","Authorization", "SecurityMediator",message.%ToJSON(),"User authorized") 
   } Else {
     Set pAuthorized = 0
     Set message.error = $USERNAME_" is not authorized for this request. User Roles Allowed is not in User Roles"
+    Do $SYSTEM.Security.Audit("SecurityMediator","Authorization", "SecurityMediator",message.%ToJSON(),"User not authorized")
     Write message.%ToJSON()
   }
 

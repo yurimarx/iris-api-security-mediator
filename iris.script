@@ -2,7 +2,7 @@
 
 zn "%SYS"
 Do ##class(Security.Users).UnExpireUserPasswords("*")
-
+Do ##class(Security.Events).Create("SecurityMediator","Authorization","SecurityMediator","REST API Security Mediator event")
 zn "USER"
 zpm "load /opt/irisapp/ -v":1:1
 halt

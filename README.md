@@ -110,6 +110,9 @@ ClassMethod GetInfo() As %Status
 
 26. Enjoy!
 
+# Use online this sample on-line
+This app is on-line in the URL: http://ymservices.tech:52773/crud/
+
 
 # Future features
 
