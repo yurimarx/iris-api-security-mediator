@@ -10,8 +10,6 @@ XData UrlMap [ XMLNamespace = "http://www.intersystems.com/urlmap" ]
 <Route Url="/" Method="GET" Call="GetInfo" Cors="true"/>
 <!-- Get all records of Person class -->
 <Route Url="/persons/all" Method="GET" Call="GetAllPersons"/>
-<!-- Get all records of Person class -->
-<Route Url="/persons/populate" Method="GET" Call="Populate"/>
 <!-- Swagger specs -->
 <Route Url="/_spec" Method="GET" Call="SwaggerSpec" />
 <!-- GET method to return JSON for a given person id-->
@@ -20,6 +18,8 @@ XData UrlMap [ XMLNamespace = "http://www.intersystems.com/urlmap" ]
 <Route Url="/persons/:id" Method="PUT" Call="UpdatePerson"/>
 <!-- Delete a person with id-->
 <Route Url="/persons/:id" Method="DELETE" Call="DeletePerson"/>
+<!-- Populate Person class -->
+<Route Url="/persons/populate" Method="GET" Call="Populate"/>
 <!-- Create a person-->
 <Route Url="/persons/" Method="POST" Call="CreatePerson"/> 
 

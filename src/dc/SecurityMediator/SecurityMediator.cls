@@ -69,6 +69,7 @@ ClassMethod AccessCheck(Output pAuthorized As %Boolean = 0) As %Status
     Set message.error = $USERNAME_" is not authorized for this request. User Roles Allowed is not in User Roles"
     Do $SYSTEM.Security.Audit("SecurityMediator","Authorization", "SecurityMediator",message.%ToJSON(),"User not authorized")
     Write message.%ToJSON()
+    Quit tSC
   }
 
   If HasHeader {
